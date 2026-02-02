@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ação Social - AD Salvador</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Ação Social - AD Salvador</h1>
+        <p>Assembleia de Deus - Setor Marechal Rondon (Salvador-BA)</p>
+    </header>
+
+    <main>
+        <section id="cadastro-container">
+            <h2>Cadastro de Solicitante</h2>
+            <form id="form-cadastro">
+                <div class="form-group">
+                    <label for="nome">Nome Completo do Responsável:</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Ex: João da Silva">
+                </div>
+
+                <div class="form-group">
+                    <label for="renda">Renda Familiar Mensal (R$):</label>
+                    <input type="number" id="renda" name="renda" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dependentes">Número de Dependentes:</label>
+                    <input type="number" id="dependentes" name="dependentes" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endereco">Endereço/Ponto de Referência:</label>
+                    <textarea id="endereco" name="endereco" rows="2" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="congregacao">Congregação Vinculada:</label>
+                    <select id="congregacao" name="congregacao" required style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="" disabled selected>Selecione a congregação...</option>
+                        <option value="Sede Marechal Rondon">Sede Marechal Rondon</option>
+                        <option value="Ligia Maria">Ligia Maria</option>
+                        <option value="Sao Caetano">Sao Caetano</option>
+                        <option value="Antonio Teixeira">Antonio Teixeira</option>
+                        <option value="Antonio Calixto">Antonio Calixto</option>
+                        <option value="Sussunga">Sussunga</option>
+                        <option value="Formiga">Formiga</option>
+                        <option value="Campinas 1">Campinas 1</option>
+                        <option value="Campinas 2">Campinas 2</option>
+                        <option value="Campinas 3">Campinas 3</option>
+                        <option value="Rua da Alegria">Rua da Alegria</option>
+                        <option value="Alto da Boa Vista">Alto da Boa Vista</option>
+                        <option value="Rua Iolanda">Rua Iolanda</option>
+                        <option value="Baixa do Camurijipe">Baixa do Camurijipe</option>
+                        <option value="Alto da Camurujipe">Alto da Camurujipe</option>
+                        <option value="Areal de Baixo">Areal de Baixo</option>
+                        <option value="Monte Sinai">Monte Sinai</option>
+                        <option value="Barriquinha">Barriquinha</option>
+                        <option value="Estacio de Sá">Estacio de Sá</option>
+                        <option value="Profilurb">Profilurb</option>
+                        <option value="Parque Tecau">Parque Tecau</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="btn-salvar">Enviar Cadastro</button>
+            </form>
+        </section>
+
+        <section id="dashboard-rapido" style="display: none; border-top: 4px solid #2980b9; margin-top: 40px;">
+            <h2>Painel de Gestão e Priorização</h2>
+            
+            <button id="btn-exportar" style="background-color: #2980b9; margin-bottom: 15px; width: 100%; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">
+                📥 Exportar Relatório para CSV
+            </button>
+            
+            <div id="status-cestas">
+                </div>
+            
+            <button onclick="logoutAdmin()" style="margin-top: 20px; background-color: #7f8c8d; width: 100%; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">
+                Sair do Painel
+            </button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Projeto de Extensão - Tecnologia Aplicada à Inclusão Digital</p>
+        <button onclick="acessoAdmin()" style="background: none; border: none; color: #95a5a6; cursor: pointer; text-decoration: underline; font-size: 0.8rem; margin-top: 10px;">
+            Acesso Administrativo (Liderança)
+        </button>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
