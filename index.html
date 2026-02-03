@@ -39,7 +39,7 @@
 
                 <div class="form-group">
                     <label for="congregacao">Congregação Vinculada:</label>
-                    <select id="congregacao" name="congregacao" required style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 4px;">
+                    <select id="congregacao" name="congregacao" required class="select-field">
                         <option value="" disabled selected>Selecione a congregação...</option>
                         <option value="Sede Marechal Rondon">Sede Marechal Rondon</option>
                         <option value="Ligia Maria">Ligia Maria</option>
@@ -72,14 +72,14 @@
         <section id="dashboard-rapido" style="display: none; border-top: 4px solid #2980b9; margin-top: 40px;">
             <h2>Painel de Gestão e Priorização</h2>
             
-            <button id="btn-exportar" style="background-color: #2980b9; margin-bottom: 15px; width: 100%; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">
-                📥 Exportar Relatório para CSV
+            <button id="btn-exportar" class="btn-admin-top">
+                📥 Exportar Relatório por Congregação (CSV)
             </button>
             
             <div id="status-cestas">
                 </div>
             
-            <button onclick="logoutAdmin()" style="margin-top: 20px; background-color: #7f8c8d; width: 100%; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">
+            <button onclick="logoutAdmin()" class="btn-logout">
                 Sair do Painel
             </button>
         </section>
@@ -87,7 +87,7 @@
 
     <footer>
         <p>&copy; 2026 Projeto de Extensão - Tecnologia Aplicada à Inclusão Digital</p>
-        <button onclick="acessoAdmin()" style="background: none; border: none; color: #95a5a6; cursor: pointer; text-decoration: underline; font-size: 0.8rem; margin-top: 10px;">
+        <button onclick="acessoAdmin()" class="btn-footer-admin">
             Acesso Administrativo (Liderança)
         </button>
     </footer>
