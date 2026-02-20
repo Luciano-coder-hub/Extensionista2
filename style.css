@@ -91,5 +91,4 @@ footer { text-align: center; padding: 2rem; color: #7f8c8d; }
 .btn-footer-admin { background: none; border: none; color: #95a5a6; cursor: pointer; text-decoration: underline; font-size: 0.8rem; }
 
 @media (max-width: 600px) {
-    .btn-group-admin { flex-direction: column; }
-}
+    .btn-group-admin { flex-direction: column; }}

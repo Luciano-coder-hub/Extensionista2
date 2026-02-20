@@ -1,9 +1,38 @@
-// 1. Controle de Inicialização
+// 1. Configuração do Firebase
+const firebaseConfig = {
+    databaseURL: "https://projetoacaoosocial-default-rtdb.firebaseio.com/"
+};
+
+// Inicializando a versão Compat do Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Variável global para armazenar os dados em tempo real
+let familiasGlobal = [];
+
+// 2. Controle de Inicialização
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dashboard-rapido').style.display = 'none';
 });
 
-// 2. Envio de Cadastro e Lógica de Priorização
+// 3. Escuta em Tempo Real (Realtime Database)
+db.ref('familias').on('value', (snapshot) => {
+    const data = snapshot.val();
+    familiasGlobal = [];
+    
+    if (data) {
+        for (let key in data) {
+            familiasGlobal.push({ ...data[key], dbKey: key });
+        }
+    }
+    
+    // Atualiza a tela automaticamente se o painel estiver aberto
+    if (document.getElementById('dashboard-rapido').style.display === 'block') {
+        renderizarLista();
+    }
+});
+
+// 4. Envio de Cadastro e Lógica de Priorização
 document.getElementById('form-cadastro').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -13,16 +42,14 @@ document.getElementById('form-cadastro').addEventListener('submit', function(e) 
     const endereco = document.getElementById('endereco').value;
     const congregacao = document.getElementById('congregacao').value;
 
-    // Cálculo da Renda per Capita para priorização justa
     const pessoas = dependentes + 1;
     const rendaPerCapita = renda / pessoas;
     
     let prioridade = "BAIXA";
-    if (rendaPerCapita <= 218) prioridade = "ALTA"; // Critério de extrema pobreza
+    if (rendaPerCapita <= 218) prioridade = "ALTA"; 
     else if (rendaPerCapita <= 706) prioridade = "MÉDIA";
 
     const novaFamilia = {
-        id: Date.now(),
         nome,
         renda,
         dependentes,
@@ -30,38 +57,38 @@ document.getElementById('form-cadastro').addEventListener('submit', function(e) 
         congregacao,
         prioridade,
         entregue: false,
-        negado: false, // Novo status
+        negado: false,
         dataEntrega: null,
         dataCadastro: new Date().toLocaleDateString('pt-BR')
     };
 
-    let familias = JSON.parse(localStorage.getItem('familias_ad_marechal')) || [];
-    familias.push(novaFamilia);
-    localStorage.setItem('familias_ad_marechal', JSON.stringify(familias));
-
-    this.reset();
-    alert("Cadastro realizado com sucesso! A liderança analisará os dados.");
+    // Salva no banco de dados
+    db.ref('familias').push(novaFamilia)
+        .then(() => {
+            document.getElementById('form-cadastro').reset();
+            alert("Cadastro realizado com sucesso! A liderança analisará os dados.");
+        })
+        .catch((error) => {
+            alert("Erro ao salvar cadastro: " + error);
+        });
 });
 
-// 3. Funções de Gestão (Entrega e Negação)
-function confirmarEntrega(id) {
-    atualizarStatus(id, { entregue: true, negado: false, dataEntrega: new Date().toLocaleString('pt-BR') });
+// 5. Funções de Gestão (Entrega e Negação)
+function confirmarEntrega(dbKey) {
+    atualizarStatus(dbKey, { entregue: true, negado: false, dataEntrega: new Date().toLocaleString('pt-BR') });
 }
 
-function negarPedido(id) {
+function negarPedido(dbKey) {
     if(confirm("Deseja realmente negar este pedido?")) {
-        atualizarStatus(id, { entregue: false, negado: true, dataEntrega: "NEGADO" });
+        atualizarStatus(dbKey, { entregue: false, negado: true, dataEntrega: "NEGADO" });
     }
 }
 
-function atualizarStatus(id, novosDados) {
-    let familias = JSON.parse(localStorage.getItem('familias_ad_marechal')) || [];
-    familias = familias.map(f => (f.id === id ? { ...f, ...novosDados } : f));
-    localStorage.setItem('familias_ad_marechal', JSON.stringify(familias));
-    renderizarLista();
+function atualizarStatus(dbKey, novosDados) {
+    db.ref(`familias/${dbKey}`).update(novosDados);
 }
 
-// 4. Acesso Administrativo
+// 6. Acesso Administrativo (Voltou a funcionar no HTML!)
 function acessoAdmin() {
     const senha = prompt("Digite a senha de acesso (Liderança):");
     if (senha === "adm123") {
@@ -78,17 +105,16 @@ function logoutAdmin() {
     window.scrollTo(0, 0);
 }
 
-// 5. Renderização da Lista com Ranqueamento
+// 7. Renderização da Lista com Ranqueamento
 function renderizarLista() {
     const statusDiv = document.getElementById('status-cestas');
-    let familias = JSON.parse(localStorage.getItem('familias_ad_marechal')) || [];
+    let familias = [...familiasGlobal]; 
 
     if (familias.length === 0) {
         statusDiv.innerHTML = "<p>Nenhum cadastro encontrado.</p>";
         return;
     }
 
-    // Ordenação: Ativos (Alta > Média > Baixa) -> Concluídos -> Negados
     familias.sort((a, b) => {
         if (a.negado !== b.negado) return a.negado ? 1 : -1;
         if (a.entregue !== b.entregue) return a.entregue ? 1 : -1;
@@ -106,8 +132,8 @@ function renderizarLista() {
                 
                 ${(!f.entregue && !f.negado) 
                     ? `<div class="btn-group-admin">
-                        <button onclick="confirmarEntrega(${f.id})" class="btn-confirm">Confirmar</button>
-                        <button onclick="negarPedido(${f.id})" class="btn-deny">Negar</button>
+                        <button onclick="confirmarEntrega('${f.dbKey}')" class="btn-confirm">Confirmar</button>
+                        <button onclick="negarPedido('${f.dbKey}')" class="btn-deny">Negar</button>
                        </div>` 
                     : `<p class="status-final">${f.negado ? '❌ Não aprovado' : '✅ Entregue: ' + f.dataEntrega}</p>`
                 }
@@ -116,12 +142,11 @@ function renderizarLista() {
     }).join('');
 }
 
-// 6. Exportação Agrupada por Congregação
+// 8. Exportação Agrupada por Congregação
 document.getElementById('btn-exportar').addEventListener('click', function() {
-    const familias = JSON.parse(localStorage.getItem('familias_ad_marechal')) || [];
+    const familias = [...familiasGlobal];
     if (familias.length === 0) return alert("Não há dados para exportar.");
 
-    // Agrupamento
     const agrupado = familias.reduce((acc, f) => {
         if (!acc[f.congregacao]) acc[f.congregacao] = [];
         acc[f.congregacao].push(f);
